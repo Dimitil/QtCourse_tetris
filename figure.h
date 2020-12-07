@@ -11,26 +11,37 @@ enum class Rotate{
 
 class Figure
 {
-    QColor fig[3];
-    int m_i;
-    int m_j;
-    const int m_W = 20;
 public:
+    const static uint rectCount = 3;
+
+private:
+
+    QColor fig[rectCount];
+    uint m_i = 0;
+    uint m_j = 0;
+    const uint m_W = 20;
+
+public:
+
     Figure();
 
-    void setI(int i) {
+    QColor getColor(uint index) const {
+        return fig[index];
+    }
+
+    void setI(uint i) {
         m_i = i;
     }
 
-    void setJ(int i) {
-        m_i = i;
+    void setJ(uint i) {
+        m_j = i;
     }
 
-    int i() {
+    uint i() const {
         return m_i;
     }
 
-    int j() {
+    uint j() const {
         return m_j;
     }
 
@@ -50,7 +61,7 @@ public:
     }
 
     void MakeRandomColors() {
-        for(int i = 0 ; i < 3; i++ ) {
+        for(int i = 0 ; i < rectCount; i++ ) {
             int tmp = rand() % 4;
             switch (tmp) {
             case 1:
@@ -72,11 +83,13 @@ public:
     }
 
     void paintFigure(QPainter &painter) {
-        for (int i = 0; i < 3; i++) {
+        for (uint i = 0; i < rectCount; i++) {
             painter.setBrush(fig[i]);
-            painter.drawRect(0, 0 + i*m_W, m_W, m_W);
+            painter.drawRect(this->i(), j() + i*m_W, m_W, m_W);
         }
     }
+
+
 };
 
 #endif // FIGURE_H

@@ -10,16 +10,17 @@ class glass : public QWidget
     Q_OBJECT
     const uint W = 20;
     static const QColor emptyCellQColor;
-    const uint timeInterval = 100;
+    const uint timeInterval = 200;
     Q_PROPERTY(uint rows READ rows WRITE setRows)
     Q_PROPERTY(uint columns READ columns WRITE setColumns)
-    uint m_rows = 30;
-    uint m_columns = 10;
+    uint m_rows;
+    uint m_columns;
     bool gameOn;
     uint score;
     QVector<QVector<QColor>>glassArray;
     Figure *cur;
     Figure *next;
+    int idTimer;
 public:
     explicit glass(QWidget *parent = nullptr);
     ~glass();
@@ -27,6 +28,8 @@ public:
     uint rows() const;
 
     uint columns() const;
+
+    void resetCurAndNext();
 
 public slots:
     void setRows(uint rows);
@@ -37,25 +40,37 @@ public slots:
 
     void clearGlass();
 
-    void slotNewGame() {
-        gameOn = true;
-        clearGlass();
-        cur ->MakeRandomColors();
-        cur->setI(0);
-        cur->setJ(0);
-        next->MakeRandomColors();
-        //repaint example
-        startTimer(timeInterval);
-        repaint();
-    }
+    void slotNewGame();
 
     QSize windowSize();
+
+    void shiftLeft() {
+        if( cur->i() != 0) {
+            int tmp = cur->i();
+            tmp -= W;
+            cur->setI(tmp);
+         }
+    }
+
+    void shiftRight() {
+        if( cur-> i() != (m_columns-1) * W) {
+            int tmp = cur->i();
+            tmp += W;
+            cur->setI(tmp);
+        }
+    }
+
+    void acceptFigure(Figure* fig);
 signals:
     void signalGlassInit();
 
     // QWidget interface
 protected:
     void paintEvent(QPaintEvent *event) override;
+
+    void keyPressEvent(QKeyEvent *event) override;
+
+    void timerEvent(QTimerEvent *event) override;
 };
 
 #endif // GLASS_H

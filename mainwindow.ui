@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>689</width>
-    <height>494</height>
+    <width>725</width>
+    <height>391</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -71,11 +77,26 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="minimumSize">
+       <size>
+        <width>231</width>
+        <height>299</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>231</width>
+        <height>299</height>
+       </size>
+      </property>
       <property name="focusPolicy">
        <enum>Qt::StrongFocus</enum>
       </property>
       <property name="rows" stdset="0">
        <UInt>20</UInt>
+      </property>
+      <property name="columns" stdset="0">
+       <UInt>10</UInt>
       </property>
      </widget>
     </item>
@@ -140,7 +161,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>689</width>
+     <width>725</width>
      <height>21</height>
     </rect>
    </property>
