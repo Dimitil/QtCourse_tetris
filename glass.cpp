@@ -2,6 +2,7 @@
 #include <QPainter>
 #include <QDebug>
 #include <QKeyEvent>
+#include <QMessageBox>
 
 glass::glass(QWidget *parent) : QWidget(parent)
 {
@@ -63,7 +64,7 @@ void glass::slotNewGame() {
     gameOn = true;
     clearGlass();
     cur ->MakeRandomColors();
-    cur->setI(0);
+    cur->setI(m_columns/2 * W);
     cur->setJ(0);
     next->MakeRandomColors();
     setFixedSize(windowSize());
@@ -74,6 +75,22 @@ void glass::slotNewGame() {
 
 QSize glass::windowSize(){
     return QSize(W*m_columns, W*m_rows);
+}
+
+void glass::shiftLeft() {
+    int tmp = cur->i();
+    tmp -= W;
+    if( (cur->i() != 0) && (glassArray[cur->j()/W + 2][tmp/W] == emptyCellQColor)) {
+        cur->setI(tmp);
+    }
+}
+
+void glass::shiftRight() {
+    int tmp = cur->i();
+    tmp += W;
+    if( (cur-> i() != (m_columns-1) * W) && (glassArray[cur->j()/W + 2][tmp/W] == emptyCellQColor)) {
+        cur->setI(tmp);
+    }
 }
 
 const QColor glass::emptyCellQColor = Qt::gray;
@@ -119,6 +136,7 @@ void glass::keyPressEvent(QKeyEvent *event)
 
             case Qt::Key_Space:
                 //«роняем» фигурку
+                dropFigure();
                 break;
 
             default:
@@ -150,6 +168,7 @@ void glass::timerEvent(QTimerEvent *event) {
     }
     else {
         acceptFigure(cur);
+        checkGlass();
         resetCurAndNext();
     }
     repaint();
@@ -158,10 +177,16 @@ void glass::timerEvent(QTimerEvent *event) {
 void glass::resetCurAndNext() {
     cur = next;
     next -> MakeRandomColors();
-    next ->setI(0);
-    next ->setJ(0);
+    next->setI(m_columns/2 * W);
+    next->setJ(0);
     //проанализировать где появляется и может быть это гейм овер
+
+    if (glassArray[cur->rectCount - 1][m_columns/2] != emptyCellQColor) {
+        killTimer(idTimer);
+        QMessageBox::information(this, "Not bad", "Game over!");
+    }
 }
+
 void glass::acceptFigure(Figure* fig) {
     uint column = fig -> i() / W;
     uint row = fig -> j() / W;

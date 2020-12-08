@@ -61,7 +61,7 @@ public:
     }
 
     void MakeRandomColors() {
-        for(int i = 0 ; i < rectCount; i++ ) {
+        for(uint i = 0 ; i < rectCount; i++ ) {
             int tmp = rand() % 4;
             switch (tmp) {
             case 1:

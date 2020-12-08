@@ -10,7 +10,7 @@ class glass : public QWidget
     Q_OBJECT
     const uint W = 20;
     static const QColor emptyCellQColor;
-    const uint timeInterval = 200;
+    const uint timeInterval = 50;
     Q_PROPERTY(uint rows READ rows WRITE setRows)
     Q_PROPERTY(uint columns READ columns WRITE setColumns)
     uint m_rows;
@@ -31,6 +31,22 @@ public:
 
     void resetCurAndNext();
 
+    void dropFigure() {
+        int Y = cur->j() / W + 2;
+        int X = cur->i() / W;
+
+        int newY = Y;
+        for (int i = Y+1; i < glassArray.size(); i++) {
+            if (glassArray[i][X] == emptyCellQColor) {
+                newY++;
+            }
+            else {
+                break;
+            }
+        }
+        cur->setJ((newY-2)*W);
+    }
+
 public slots:
     void setRows(uint rows);
 
@@ -44,23 +60,15 @@ public slots:
 
     QSize windowSize();
 
-    void shiftLeft() {
-        int tmp = cur->i();
-        tmp -= W;
-        if( (cur->i() != 0) && (glassArray[cur->j()/W + 2][tmp/W] == emptyCellQColor)) {
-            cur->setI(tmp);
-         }
-    }
+    void shiftLeft();
 
-    void shiftRight() {
-        int tmp = cur->i();
-        tmp += W;
-        if( (cur-> i() != (m_columns-1) * W) && (glassArray[cur->j()/W + 2][tmp/W] == emptyCellQColor)) {
-            cur->setI(tmp);
-        }
-    }
+    void shiftRight();
 
     void acceptFigure(Figure* fig);
+
+    void checkGlass() {
+        //сделать
+    }
 signals:
     void signalGlassInit();
 
