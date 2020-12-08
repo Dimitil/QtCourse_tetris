@@ -7,9 +7,8 @@ glass::glass(QWidget *parent) : QWidget(parent)
 {
     gameOn = false;
     score = 0;
-    connect(this, &glass::signalGlassInit, this, &glass::slotGlassInit);
+    connect(this, &glass::signalGlassInit, this, &glass::slotGlassInit, Qt::QueuedConnection);
     signalGlassInit();
-    //setFixedSize(windowSize());
 
     cur = new Figure;
     cur->setI(0);

@@ -45,17 +45,17 @@ public slots:
     QSize windowSize();
 
     void shiftLeft() {
-        if( cur->i() != 0) {
-            int tmp = cur->i();
-            tmp -= W;
+        int tmp = cur->i();
+        tmp -= W;
+        if( (cur->i() != 0) && (glassArray[cur->j()/W + 2][tmp/W] == emptyCellQColor)) {
             cur->setI(tmp);
          }
     }
 
     void shiftRight() {
-        if( cur-> i() != (m_columns-1) * W) {
-            int tmp = cur->i();
-            tmp += W;
+        int tmp = cur->i();
+        tmp += W;
+        if( (cur-> i() != (m_columns-1) * W) && (glassArray[cur->j()/W + 2][tmp/W] == emptyCellQColor)) {
             cur->setI(tmp);
         }
     }
