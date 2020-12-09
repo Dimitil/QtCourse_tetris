@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QKeyEvent>
 #include <QMessageBox>
+#include "nextfigure.h"
 
 glass::glass(QWidget *parent) : QWidget(parent)
 {
@@ -68,6 +69,7 @@ void glass::slotNewGame() {
     cur->setJ(0);
     next->MakeRandomColors();
     setFixedSize(windowSize());
+    emit signalNewNext(next);
     repaint();
     setFocus();
     idTimer = startTimer(timeInterval);
@@ -169,13 +171,14 @@ void glass::timerEvent(QTimerEvent *event) {
     else {
         acceptFigure(cur);
         checkGlass();
+        emit signalScore(score);
         resetCurAndNext();
     }
     repaint();
 }
 
 void glass::resetCurAndNext() {
-    cur = next;
+    std::swap(cur, next);
     next -> MakeRandomColors();
     next->setI(m_columns/2 * W);
     next->setJ(0);
@@ -185,6 +188,8 @@ void glass::resetCurAndNext() {
         killTimer(idTimer);
         QMessageBox::information(this, "Not bad", "Game over!");
     }
+
+    emit signalNewNext(next);//сигнал для NextFigure widget;
 }
 
 void glass::acceptFigure(Figure* fig) {

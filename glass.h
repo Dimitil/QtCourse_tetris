@@ -10,13 +10,13 @@ class glass : public QWidget
     Q_OBJECT
     const uint W = 20;
     static const QColor emptyCellQColor;
-    const uint timeInterval = 50;
+    const uint timeInterval = 100;
     Q_PROPERTY(uint rows READ rows WRITE setRows)
     Q_PROPERTY(uint columns READ columns WRITE setColumns)
     uint m_rows;
     uint m_columns;
     bool gameOn;
-    uint score;
+    int score;
     QVector<QVector<QColor>>glassArray;
     Figure *cur;
     Figure *next;
@@ -30,6 +30,10 @@ public:
     uint columns() const;
 
     void resetCurAndNext();
+
+    void addScore() {
+        score++;
+    }
 
     void dropFigure() {
         int Y = cur->j() / W + 2;
@@ -66,12 +70,50 @@ public slots:
 
     void acceptFigure(Figure* fig);
 
-    void checkGlass() {
-        //сделать
+    bool checkGlass() {
+        bool wasRebuild = false;
+        qDebug() << m_rows << m_columns;
+        for (uint i = m_rows - 1; i > 2; i--) {
+            for( uint j = 0; j < m_columns - 2 ; j++) { //чек строки
+                if ( (glassArray[i][j] !=emptyCellQColor) &&
+                     (glassArray[i][j] == glassArray[i][j+1]) &&
+                     (glassArray[i][j] == glassArray[i][j+2]) )
+                {
+                    qDebug() << i << j;
+                    addScore();
+                    for ( uint g = i; g > 0; g--) {
+                        glassArray[g][j] = glassArray[g-1][j];
+                        glassArray[g][j+1]   = glassArray[g-1][j+1];
+                        glassArray[g][j+2] = glassArray[g-1][j+2];
+                    }
+                    wasRebuild = true;
+                }
+                if ( (glassArray[i][j] !=emptyCellQColor) &&        // чек столбцов
+                      (glassArray[i][j] == glassArray[i+1][j]) &&
+                      (glassArray[i][j] == glassArray[i+2][j]) )
+                {
+                    for ( uint g = j; g > 0; g--) {
+//                        glassArray[g][j] = glassArray[g-1][j];
+//                        glassArray[g][j+1]   = glassArray[g-1][j+10];
+//                        glassArray[g][j+2] = glassArray[g-1][j+2];
+                    }
+                    wasRebuild = true;
+                }
+            }
+        }
+
+
+        if (wasRebuild) {
+            return checkGlass();
+        }
+        return false;
     }
 signals:
+    void signalScore(int);
+
     void signalGlassInit();
 
+    void signalNewNext(Figure* NewFig);
     // QWidget interface
 protected:
     void paintEvent(QPaintEvent *event) override;

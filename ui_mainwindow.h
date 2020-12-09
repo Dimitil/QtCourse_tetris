@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.15.2
+** Created by: Qt User Interface Compiler version 5.15.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -25,7 +25,8 @@
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
-#include "glass.h"
+#include <glass.h>
+#include <nextfigure.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -38,9 +39,9 @@ public:
     QVBoxLayout *verticalLayout;
     QFrame *frame;
     QGridLayout *gridLayout;
+    NextFigure *widget_2;
     QLabel *nextLbl;
     QSpacerItem *verticalSpacer;
-    glass *widget;
     QVBoxLayout *verticalLayout_3;
     QPushButton *newGameBtn;
     QPushButton *exitBtn;
@@ -48,6 +49,7 @@ public:
     QLabel *label_2;
     QLCDNumber *lcdNumber;
     QSpacerItem *verticalSpacer_3;
+    glass *widget;
     QMenuBar *menubar;
     QMenu *menu;
     QMenu *menu_2;
@@ -83,37 +85,35 @@ public:
         frame->setFrameShadow(QFrame::Raised);
         gridLayout = new QGridLayout(frame);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
-        nextLbl = new QLabel(frame);
-        nextLbl->setObjectName(QString::fromUtf8("nextLbl"));
-        QSizePolicy sizePolicy2(QSizePolicy::Minimum, QSizePolicy::Minimum);
+        widget_2 = new NextFigure(frame);
+        widget_2->setObjectName(QString::fromUtf8("widget_2"));
+        QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Expanding);
         sizePolicy2.setHorizontalStretch(0);
         sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(nextLbl->sizePolicy().hasHeightForWidth());
-        nextLbl->setSizePolicy(sizePolicy2);
+        sizePolicy2.setHeightForWidth(widget_2->sizePolicy().hasHeightForWidth());
+        widget_2->setSizePolicy(sizePolicy2);
 
-        gridLayout->addWidget(nextLbl, 0, 0, 1, 1);
+        gridLayout->addWidget(widget_2, 1, 1, 1, 1);
+
+        nextLbl = new QLabel(frame);
+        nextLbl->setObjectName(QString::fromUtf8("nextLbl"));
+        QSizePolicy sizePolicy3(QSizePolicy::Minimum, QSizePolicy::Minimum);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(nextLbl->sizePolicy().hasHeightForWidth());
+        nextLbl->setSizePolicy(sizePolicy3);
+
+        gridLayout->addWidget(nextLbl, 0, 1, 1, 1, Qt::AlignHCenter|Qt::AlignBottom);
 
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
-        gridLayout->addItem(verticalSpacer, 1, 0, 1, 1);
+        gridLayout->addItem(verticalSpacer, 2, 1, 1, 1);
 
 
         verticalLayout->addWidget(frame);
 
 
         gridLayout_2->addLayout(verticalLayout, 0, 0, 1, 1);
-
-        widget = new glass(centralwidget);
-        widget->setObjectName(QString::fromUtf8("widget"));
-        sizePolicy.setHeightForWidth(widget->sizePolicy().hasHeightForWidth());
-        widget->setSizePolicy(sizePolicy);
-        widget->setMinimumSize(QSize(231, 299));
-        widget->setMaximumSize(QSize(231, 299));
-        widget->setFocusPolicy(Qt::StrongFocus);
-        widget->setProperty("rows", QVariant(20u));
-        widget->setProperty("columns", QVariant(10u));
-
-        gridLayout_2->addWidget(widget, 0, 1, 1, 1);
 
         verticalLayout_3 = new QVBoxLayout();
         verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
@@ -138,6 +138,7 @@ public:
 
         lcdNumber = new QLCDNumber(centralwidget);
         lcdNumber->setObjectName(QString::fromUtf8("lcdNumber"));
+        lcdNumber->setSegmentStyle(QLCDNumber::Outline);
 
         verticalLayout_3->addWidget(lcdNumber);
 
@@ -147,6 +148,18 @@ public:
 
 
         gridLayout_2->addLayout(verticalLayout_3, 0, 2, 1, 1);
+
+        widget = new glass(centralwidget);
+        widget->setObjectName(QString::fromUtf8("widget"));
+        sizePolicy.setHeightForWidth(widget->sizePolicy().hasHeightForWidth());
+        widget->setSizePolicy(sizePolicy);
+        widget->setMinimumSize(QSize(231, 299));
+        widget->setMaximumSize(QSize(231, 299));
+        widget->setFocusPolicy(Qt::StrongFocus);
+        widget->setProperty("rows", QVariant(20u));
+        widget->setProperty("columns", QVariant(10u));
+
+        gridLayout_2->addWidget(widget, 0, 1, 1, 1);
 
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
@@ -173,6 +186,8 @@ public:
         QObject::connect(action, SIGNAL(triggered()), widget, SLOT(slotNewGame()));
         QObject::connect(newGameBtn, SIGNAL(clicked()), widget, SLOT(slotNewGame()));
         QObject::connect(exitBtn, SIGNAL(clicked()), MainWindow, SLOT(close()));
+        QObject::connect(widget, SIGNAL(signalNewNext(Figure*)), widget_2, SLOT(slotNewFig(Figure*)));
+        QObject::connect(widget, SIGNAL(signalScore(int)), lcdNumber, SLOT(display(int)));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
@@ -181,7 +196,7 @@ public:
     {
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
         action->setText(QCoreApplication::translate("MainWindow", "\320\235\320\260\321\207\320\260\321\202\321\214 \320\275\320\276\320\262\321\203\321\216 \320\270\320\263\321\200\321\203", nullptr));
-        nextLbl->setText(QCoreApplication::translate("MainWindow", "\320\241\320\273\320\265\320\264\321\203\321\216\321\211\320\260\321\217", nullptr));
+        nextLbl->setText(QCoreApplication::translate("MainWindow", "\320\241\320\273\320\265\320\264\321\203\321\216\321\211\320\260\321\217:", nullptr));
         newGameBtn->setText(QCoreApplication::translate("MainWindow", "\320\235\320\276\320\262\320\260\321\217 \320\270\320\263\321\200\320\260", nullptr));
         exitBtn->setText(QCoreApplication::translate("MainWindow", "\320\222\321\213\321\205\320\276\320\264", nullptr));
         label_2->setText(QCoreApplication::translate("MainWindow", "\320\241\321\207\320\265\321\202", nullptr));

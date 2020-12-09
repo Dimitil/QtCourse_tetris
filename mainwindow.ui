@@ -38,7 +38,17 @@
          <enum>QFrame::Raised</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="0" column="0">
+         <item row="1" column="1">
+          <widget class="NextFigure" name="widget_2" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1" alignment="Qt::AlignHCenter|Qt::AlignBottom">
           <widget class="QLabel" name="nextLbl">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -47,11 +57,11 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Следующая</string>
+            <string>Следующая:</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
+         <item row="2" column="1">
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -68,37 +78,6 @@
        </widget>
       </item>
      </layout>
-    </item>
-    <item row="0" column="1">
-     <widget class="glass" name="widget" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>231</width>
-        <height>299</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>231</width>
-        <height>299</height>
-       </size>
-      </property>
-      <property name="focusPolicy">
-       <enum>Qt::StrongFocus</enum>
-      </property>
-      <property name="rows" stdset="0">
-       <UInt>20</UInt>
-      </property>
-      <property name="columns" stdset="0">
-       <UInt>10</UInt>
-      </property>
-     </widget>
     </item>
     <item row="0" column="2">
      <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -137,7 +116,11 @@
        </widget>
       </item>
       <item>
-       <widget class="QLCDNumber" name="lcdNumber"/>
+       <widget class="QLCDNumber" name="lcdNumber">
+        <property name="segmentStyle">
+         <enum>QLCDNumber::Outline</enum>
+        </property>
+       </widget>
       </item>
       <item>
        <spacer name="verticalSpacer_3">
@@ -153,6 +136,37 @@
        </spacer>
       </item>
      </layout>
+    </item>
+    <item row="0" column="1">
+     <widget class="glass" name="widget" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>231</width>
+        <height>299</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>231</width>
+        <height>299</height>
+       </size>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::StrongFocus</enum>
+      </property>
+      <property name="rows" stdset="0">
+       <UInt>20</UInt>
+      </property>
+      <property name="columns" stdset="0">
+       <UInt>10</UInt>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -202,10 +216,22 @@
   <customwidget>
    <class>glass</class>
    <extends>QWidget</extends>
-   <header>glass.h</header>
+   <header location="global">glass.h</header>
    <container>1</container>
    <slots>
+    <signal>signalNewNext(Figure*)</signal>
+    <signal>signalScore(int)</signal>
     <slot>slotNewGame()</slot>
+    <slot>slotNewNext(Figure*)</slot>
+   </slots>
+  </customwidget>
+  <customwidget>
+   <class>NextFigure</class>
+   <extends>QWidget</extends>
+   <header location="global">nextfigure.h</header>
+   <container>1</container>
+   <slots>
+    <slot>slotNewFig(Figure*)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -256,6 +282,38 @@
     <hint type="destinationlabel">
      <x>593</x>
      <y>143</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>widget</sender>
+   <signal>signalNewNext(Figure*)</signal>
+   <receiver>widget_2</receiver>
+   <slot>slotNewFig(Figure*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>310</x>
+     <y>319</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>209</x>
+     <y>181</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>widget</sender>
+   <signal>signalScore(int)</signal>
+   <receiver>lcdNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>439</x>
+     <y>252</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>516</x>
+     <y>252</y>
     </hint>
    </hints>
   </connection>
