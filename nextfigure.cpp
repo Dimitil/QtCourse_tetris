@@ -12,10 +12,10 @@ void NextFigure::slotNewFig(Figure *NewFig) {
 
 void NextFigure::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
-    for (uint i = 0; i < fig->rectCount; i++) {
+    for (uint i = 0; i < 3; i++) {
         painter.setBrush(fig->getColor(i));
         painter.drawRect(rect().center().x() - W/2,
-                         (rect().center().y() - fig->rectCount * W ) + i * W,
+                         (rect().center().y() - 3 * W ) + i * W,
                          W, W);
     }
 }

@@ -4,21 +4,15 @@
 #include <QKeyEvent>
 #include <QMessageBox>
 #include "nextfigure.h"
+#include <QString>
 
-glass::glass(QWidget *parent) : QWidget(parent)
+const QColor glass::emptyCellQColor = Qt::gray;
+
+glass::glass(QWidget *parent) : QWidget(parent), gameOn(false),
+    score(0), cur(new Figure), next(new Figure)
 {
-    gameOn = false;
-    score = 0;
     connect(this, &glass::signalGlassInit, this, &glass::slotGlassInit, Qt::QueuedConnection);
     signalGlassInit();
-
-    cur = new Figure;
-    cur->setI(0);
-    cur->setJ(0);
-
-    next = new Figure;
-    next->setI(0);
-    next->setJ(0);
 }
 
 glass::~glass() {
@@ -53,22 +47,26 @@ void glass::slotGlassInit()
         glassArray[i].resize(m_columns);
         glassArray[i].fill(emptyCellQColor);
     }
+    setFixedSize(windowSize());
 }
 
 void glass::clearGlass()
 {
-    slotGlassInit();
+    for(int i = 0; i < glassArray.size(); i++) {
+        glassArray[i].fill(emptyCellQColor);
+    }
 }
 
 void glass::slotNewGame() {
-
+    if(gameOn) {
+        killTimer(idTimer);
+    }
     gameOn = true;
     clearGlass();
-    cur ->MakeRandomColors();
-    cur->setI(m_columns/2 * W);
-    cur->setJ(0);
+    cur->MakeRandomColors();
+    cur->setX(m_columns/2);
+    cur->setY(0);
     next->MakeRandomColors();
-    setFixedSize(windowSize());
     emit signalNewNext(next);
     repaint();
     setFocus();
@@ -80,22 +78,19 @@ QSize glass::windowSize(){
 }
 
 void glass::shiftLeft() {
-    int tmp = cur->i();
-    tmp -= W;
-    if( (cur->i() != 0) && (glassArray[cur->j()/W + 2][tmp/W] == emptyCellQColor)) {
-        cur->setI(tmp);
+    if( (cur->x() != 0)
+            && (glassArray[cur->y() + 2][cur->x()-1] == emptyCellQColor)) {
+        cur->setX(cur->x() - 1);
     }
 }
 
 void glass::shiftRight() {
-    int tmp = cur->i();
-    tmp += W;
-    if( (cur-> i() != (m_columns-1) * W) && (glassArray[cur->j()/W + 2][tmp/W] == emptyCellQColor)) {
-        cur->setI(tmp);
+    if( (cur-> x() != (m_columns-1))
+            && (glassArray[cur->y() + 2][cur->x() + 1] == emptyCellQColor)) {
+        cur->setX(cur->x() + 1);
     }
 }
 
-const QColor glass::emptyCellQColor = Qt::gray;
 
 
 void glass::paintEvent(QPaintEvent *event)
@@ -127,22 +122,20 @@ void glass::keyPressEvent(QKeyEvent *event)
                 break;
 
             case Qt::Key_Down:
-                //циклически ”переливаем” цвета в фигурке сверху вниз
                 cur->rotateColors(Rotate::DOWN);
                 break;
 
             case Qt::Key_Up:
-                //циклически ”переливаем” цвета в фигурке снизу вверх
                 cur->rotateColors(Rotate::UP);
                 break;
 
             case Qt::Key_Space:
-                //«роняем» фигурку
+
                 dropFigure();
                 break;
 
             default:
-                QWidget::keyPressEvent(event); //принажатии любых других клавиш вызываем базовую обработку события
+                QWidget::keyPressEvent(event);
         }
     }
     else {
@@ -151,27 +144,15 @@ void glass::keyPressEvent(QKeyEvent *event)
     repaint();
 }
 
-//    Подсказка:
-//    caseQt::Key_Space://«роняем» фигурку
-    //ищем «куда ронять»
-    //вызываем вспомогательный метод (так как нам нужно будет выполнить те же действия, когда при «падении» вниз фигурке некуда будет падать, то есть она «упрется»), например:
-    // void AcceptColors(inti, intj);
-    //в котором:
-    //Добавляем фигурку в стакан
-    //Анализируем и сбрасываем текущее содержимое стакана, вызываем например: voidCheckGlass();
-    //Меняем местами next и cur
-    //Настраиваем next и cur (у nextобнуляем индексы, а у curустанавливаем). Также генерируем новые цвета в next
-    //эмитируем сигнал drawPattern(next); чтобы отрисовать в образце следующую фигурку
-
 void glass::timerEvent(QTimerEvent *event) {
-    uint futureJ = cur->j() + W;
-    if ( ( (futureJ/W + 2) < m_rows) && (glassArray[futureJ/W+2][cur->i()/W] == emptyCellQColor)) { //если не дно стакана
-        cur -> setJ(futureJ);
+    uint futureJ = cur->y() + 1;
+    if ( ( (futureJ + 2) < m_rows)
+         && (glassArray[futureJ+2][cur->x()] == emptyCellQColor)) {
+        cur -> setY(futureJ);
     }
     else {
         acceptFigure(cur);
         checkGlass();
-        emit signalScore(score);
         resetCurAndNext();
     }
     repaint();
@@ -180,23 +161,93 @@ void glass::timerEvent(QTimerEvent *event) {
 void glass::resetCurAndNext() {
     std::swap(cur, next);
     next -> MakeRandomColors();
-    next->setI(m_columns/2 * W);
-    next->setJ(0);
-    //проанализировать где появляется и может быть это гейм овер
+    next->setX(m_columns/2);
+    next->setY(0);
 
-    if (glassArray[cur->rectCount - 1][m_columns/2] != emptyCellQColor) {
+    if (glassArray[2][m_columns/2] != emptyCellQColor) {
         killTimer(idTimer);
-        QMessageBox::information(this, "Not bad", "Game over!");
+        QMessageBox::information(this, "Not bad!",
+                                 "Game over!\nYou have "
+                                 + QString::number(score) + " score!");
     }
 
-    emit signalNewNext(next);//сигнал для NextFigure widget;
+    emit signalNewNext(next);
+}
+
+void glass::addScore() {
+    score++;
+    emit signalScore(score);
+}
+
+void glass::dropFigure() {
+    int Y = cur->y() + 2;
+    int X = cur->x() ;
+
+    int newY = Y;
+    for (int i = Y+1; i < glassArray.size(); i++) {
+        if (glassArray[i][X] == emptyCellQColor) {
+            newY++;
+        }
+        else {
+            break;
+        }
+    }
+    cur->setY((newY-2));
 }
 
 void glass::acceptFigure(Figure* fig) {
-    uint column = fig -> i() / W;
-    uint row = fig -> j() / W;
+    uint column = fig -> x();
+    uint row = fig -> y();
 
-    for (uint i = 0; i < fig -> rectCount; i++) {
+    for (uint i = 0; i < 3; i++) {
         glassArray[row+i][column] = fig->getColor(i);
     }
+}
+
+bool glass::checkRowsAndRebuild() {
+    for (uint i = m_rows - 1; i > 2; i--) {
+        for( uint j = 0; j < m_columns - 2; j++) { //чек строки
+            if ( (glassArray[i][j] !=emptyCellQColor) &&
+                 (glassArray[i][j] == glassArray[i][j+1]) &&
+                 (glassArray[i][j] == glassArray[i][j+2]) )
+            {
+                addScore();
+                for ( uint g = i; g > 0; g--) {
+                    glassArray[g][j] = glassArray[g-1][j];
+                    glassArray[g][j+1]   = glassArray[g-1][j+1];
+                    glassArray[g][j+2] = glassArray[g-1][j+2];
+                }
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool glass::checkColumnsAndRebuild() {
+    for (uint i = m_rows - 1; i > 2; i--) {
+        for( uint j = 0; j < m_columns; j++) {
+            if ( (glassArray[i][j] !=emptyCellQColor) &&        // чек столбцов
+                 (glassArray[i][j] == glassArray[i-1][j]) &&
+                 (glassArray[i][j] == glassArray[i-2][j]) )
+            {
+                addScore();
+                for ( uint g = i; g > 5; g--) {
+                    glassArray[g-2][j]   = glassArray[g-5][j];
+                    glassArray[g-1][j] = glassArray[g-4][j];
+                    glassArray[g][j] = glassArray[g-3][j];
+                }
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool glass::checkGlass() {
+    if (checkRowsAndRebuild() ||
+            checkColumnsAndRebuild()) {
+        return checkGlass();
+    }
+    return false;
 }
