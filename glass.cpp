@@ -212,7 +212,7 @@ bool glass::checkRowsAndRebuild() {
                  (glassArray[i][j] == glassArray[i][j+2]) )
             {
                 addScore();
-                for ( uint g = i; g > 0; g--) {
+                for ( uint g = i; g > 2; g--) {
                     glassArray[g][j] = glassArray[g-1][j];
                     glassArray[g][j+1]   = glassArray[g-1][j+1];
                     glassArray[g][j+2] = glassArray[g-1][j+2];
@@ -232,7 +232,13 @@ bool glass::checkColumnsAndRebuild() {
                  (glassArray[i][j] == glassArray[i-2][j]) )
             {
                 addScore();
-                for ( uint g = i; g > 5; g--) {
+                for ( uint g = i; g > 2; g--) {
+                    if (g <= 5) {
+                        glassArray[g-2][j]   =
+                        glassArray[g-1][j] =
+                        glassArray[g][j] = emptyCellQColor;
+                        continue;
+                    }
                     glassArray[g-2][j]   = glassArray[g-5][j];
                     glassArray[g-1][j] = glassArray[g-4][j];
                     glassArray[g][j] = glassArray[g-3][j];
