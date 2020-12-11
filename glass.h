@@ -10,7 +10,7 @@ class glass : public QWidget
     Q_OBJECT
     const uint W = 20;
     static const QColor emptyCellQColor;
-    const uint timeInterval = 100;
+    const uint timeInterval = 300;
     Q_PROPERTY(uint rows READ rows WRITE setRows)
     Q_PROPERTY(uint columns READ columns WRITE setColumns)
     uint m_rows;
@@ -24,6 +24,7 @@ class glass : public QWidget
 
 public:
     explicit glass(QWidget *parent = nullptr);
+
     ~glass();
 
     uint rows() const;
@@ -40,16 +41,11 @@ public:
 
     bool checkColumnsAndRebuild();
 
-public slots:
     void setRows(uint rows);
 
     void setColumns(uint columns);
 
-    void slotGlassInit();
-
     void clearGlass();
-
-    void slotNewGame();
 
     QSize windowSize();
 
@@ -61,6 +57,11 @@ public slots:
 
     bool checkGlass();
 
+public slots:
+    void slotGlassInit();
+
+    void slotNewGame();
+
 signals:
     void signalScore(int);
 
@@ -68,7 +69,6 @@ signals:
 
     void signalNewNext(Figure* NewFig);
 
-    // QWidget interface
 protected:
     void paintEvent(QPaintEvent *event) override;
 

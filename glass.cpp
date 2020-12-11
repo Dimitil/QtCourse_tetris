@@ -167,7 +167,7 @@ void glass::resetCurAndNext() {
     if (glassArray[2][m_columns/2] != emptyCellQColor) {
         killTimer(idTimer);
         QMessageBox::information(this, "Not bad!",
-                                 "Game over!\nYou have "
+                                 "Game over!\nYou get "
                                  + QString::number(score) + " score!");
     }
 
