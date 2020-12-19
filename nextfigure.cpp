@@ -2,7 +2,7 @@
 #include <QDebug>
 NextFigure::NextFigure(QWidget *parent) : QWidget(parent)
 {
-
+    fig= nullptr;
 }
 
 void NextFigure::slotNewFig(Figure *NewFig) {
@@ -11,11 +11,13 @@ void NextFigure::slotNewFig(Figure *NewFig) {
 }
 
 void NextFigure::paintEvent(QPaintEvent *event) {
-    QPainter painter(this);
-    for (uint i = 0; i < 3; i++) {
-        painter.setBrush(fig->getColor(i));
-        painter.drawRect(rect().center().x() - W/2,
-                         (rect().center().y() - 3 * W ) + i * W,
-                         W, W);
+    if(fig) {
+        QPainter painter(this);
+        for (uint i = 0; i < 3; i++) {
+            painter.setBrush(fig->getColor(i));
+            painter.drawRect(rect().center().x() - W/2,
+                             (rect().center().y() - 3 * W ) + i * W,
+                             W, W);
+        }
     }
 }
